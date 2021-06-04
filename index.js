@@ -100,17 +100,17 @@ app.get('/game/:id',auth,(req,res)=>{
             res.json(value)
         }else{
             res.statusCode = 404
-            res.send('value not found in db')
+            res.json({"err":"value not found in db"})
         }
     }else{
         res.statusCode = 400
-        res.send("type value not accepted")
+        res.json({"err":"type value not accepted"})
     }
     
 })
 
 //autenticando usuario
-app.post("/auth",auth,(req,res)=>{
+app.post("/auth",(req,res)=>{
     let {email, pass} = req.body
     value = db.user.find(data => data.email == email && data.pass == pass)
     if(value != undefined){
@@ -119,6 +119,7 @@ app.post("/auth",auth,(req,res)=>{
                 res.statusCode = 500
                 res.json({"err": "error :("})
             }else{
+                res.statusCode = 200
                 res.json({"token": token})
             }
         })
@@ -137,7 +138,7 @@ app.post('/game',auth,(req,res)=>{
     if(verify == undefined){
         res.statusCode = 200
         db.games.push({id, name, year, price})
-        res.json(id,name,year,price)
+        res.json({id,name,year,price})
     }else{
         res.statusCode = 400
         res.send('id já encontrado, não será possivel adicionar')
@@ -154,10 +155,10 @@ app.delete('/game/:id',auth,(req,res)=>{
         if(verify != -1){
             res.statusCode = 200
             db.games.splice(verify, 1)
-            res.send("")
+            res.json({"msg":"game deletado com sucesso"})
         }else{
             res.statusCode = 404
-            res.send("")
+            res.json({"err":"game não encontrado"})
         }
     }
 })
@@ -184,7 +185,7 @@ app.put('/game/:id',auth,(req,res)=>{
                 verify.price = price
             }
             res.statusCode = 200
-            res.send('')
+            res.json({"msg":"game alterado com sucesso"})
         }else{
             res.statusCode = 404
         }
